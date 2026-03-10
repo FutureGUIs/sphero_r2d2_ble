@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import time
-from collections.abc import Callable
 from typing import Any
 
 from bleak import BleakClient
@@ -23,7 +23,6 @@ from .const import (
     R2_CHAR_NOTIFY_1,
     R2_SERVICE_AUTH,
     R2_SERVICE_CMD,
-    SLEEP_TIMEOUT_SECONDS,
     STANCE_TO_VALUE,
 )
 
@@ -54,6 +53,7 @@ class R2D2Api:
         self._sequence = 0
         self._last_command_monotonic: float | None = None
         self._connected = False
+        self._is_asleep = False
         self._last_battery: int | None = None
         self._last_stance: str | None = None
 
@@ -173,20 +173,24 @@ class R2D2Api:
 
     async def async_wake(self) -> None:
         await self.async_send_command(0x13, 0x0D)
+        self._is_asleep = False
 
     async def async_sleep(self) -> None:
         await self.async_send_command(0x13, 0x01)
+        self._is_asleep = True
 
     async def async_play_animation(self, animation_id: int) -> None:
         if not 0 <= animation_id <= 56:
             raise ValueError("animation_id must be between 0 and 56")
         await self.async_send_command(0x17, 0x05, bytes((0x00, animation_id)))
+        self._is_asleep = False
 
     async def async_set_stance(self, stance: str) -> None:
         if stance not in STANCE_TO_VALUE:
             raise ValueError(f"Unsupported stance: {stance}")
         await self.async_send_command(0x17, 0x0D, bytes((STANCE_TO_VALUE[stance],)))
         self._last_stance = stance
+        self._is_asleep = False
 
     async def async_get_status(self) -> dict[str, Any]:
         """Poll current status."""
@@ -198,6 +202,7 @@ class R2D2Api:
                 if raw:
                     battery = int(raw[0])
                     self._last_battery = battery
+                self._is_asleep = False
             except Exception:
                 _LOGGER.debug("Battery read failed for %s", self.address, exc_info=True)
                 battery = self._last_battery
@@ -231,11 +236,4 @@ class R2D2Api:
 
     @property
     def is_asleep(self) -> bool:
-        if not self._connected:
-            return True
-        if self._last_command_monotonic is None:
-            return False
-        return self.idle_seconds > SLEEP_TIMEOUT_SECONDS
-
-
-import contextlib
+        return self._is_asleep
