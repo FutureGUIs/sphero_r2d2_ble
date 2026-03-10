@@ -22,6 +22,12 @@ class R2D2Coordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         self.api = api
 
+    def async_update_local_state(self, **changes: Any) -> None:
+        """Push known state changes to entities without waiting for a poll."""
+        current = dict(self.data) if self.data else {}
+        current.update(changes)
+        self.async_set_updated_data(current)
+
     async def _async_update_data(self) -> dict[str, Any]:
         try:
             return await self.api.async_get_status()

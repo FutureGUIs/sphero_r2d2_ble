@@ -8,7 +8,7 @@
     }
   ],
   "config_flow": true,
-  "documentation": "https://github.com/h311m4n000/HA-Control-Sphero-R2D2",
+  "documentation": "https://github.com/FutureGUIs/sphero_r2d2_ble",
   "integration_type": "device",
   "iot_class": "local_polling",
   "loggers": ["custom_components.sphero_r2d2_ble"],

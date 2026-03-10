@@ -21,8 +21,20 @@ async def async_setup_entry(
     runtime: RuntimeData = entry.runtime_data
     async_add_entities(
         [
-            R2D2ActionButton(runtime, "Wake", "wake", runtime.api.async_wake),
-            R2D2ActionButton(runtime, "Sleep", "sleep", runtime.api.async_sleep),
+            R2D2ActionButton(
+                runtime,
+                "Wake",
+                "wake",
+                runtime.api.async_wake,
+                {"asleep": False, "connected": True},
+            ),
+            R2D2ActionButton(
+                runtime,
+                "Sleep",
+                "sleep",
+                runtime.api.async_sleep,
+                {"asleep": True},
+            ),
             R2D2PlayAnimationButton(runtime),
         ]
     )
@@ -35,14 +47,18 @@ class R2D2ActionButton(R2D2Entity, ButtonEntity):
         name: str,
         key: str,
         action: Callable[[], Awaitable[None]],
+        state_changes: dict[str, object] | None = None,
     ) -> None:
         super().__init__(runtime_data)
         self._attr_name = name
         self._attr_unique_id = f"{self.api.address}_{key}"
         self._action = action
+        self._state_changes = state_changes or {}
 
     async def async_press(self) -> None:
         await self._action()
+        if self._state_changes:
+            self.coordinator.async_update_local_state(**self._state_changes)
         await self.coordinator.async_request_refresh()
 
 
@@ -54,4 +70,5 @@ class R2D2PlayAnimationButton(R2D2Entity, ButtonEntity):
 
     async def async_press(self) -> None:
         await self.api.async_play_animation(self.runtime_data.selected_animation)
+        self.coordinator.async_update_local_state(asleep=False, connected=True)
         await self.coordinator.async_request_refresh()

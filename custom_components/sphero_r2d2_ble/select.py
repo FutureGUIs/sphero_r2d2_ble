@@ -41,6 +41,9 @@ class R2D2StanceSelect(R2D2Entity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         await self.api.async_set_stance(option)
+        self.coordinator.async_update_local_state(
+            stance=option,
+        )
         await self.coordinator.async_request_refresh()
 
 

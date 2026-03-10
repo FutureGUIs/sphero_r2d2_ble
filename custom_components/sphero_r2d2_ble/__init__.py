@@ -85,7 +85,11 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
     async def handle_set_stance(call: ServiceCall) -> None:
         runtime = await _resolve_runtime(call)
-        await runtime.api.async_set_stance(call.data["stance"])
+        stance = call.data["stance"]
+        await runtime.api.async_set_stance(stance)
+        runtime.coordinator.async_update_local_state(
+            stance=stance,
+        )
         await runtime.coordinator.async_request_refresh()
 
     hass.services.async_register(

@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
-
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from typing import TYPE_CHECKING
 
 from .api import R2D2Api
+
+if TYPE_CHECKING:
+    from .coordinator import R2D2Coordinator
 
 
 @dataclass
@@ -15,7 +16,7 @@ class RuntimeData:
     """Runtime data stored for a config entry."""
 
     api: R2D2Api
-    coordinator: DataUpdateCoordinator[dict[str, Any]]
+    coordinator: R2D2Coordinator
     selected_animation: int = 0
 
 

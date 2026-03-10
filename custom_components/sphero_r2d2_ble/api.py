@@ -199,7 +199,6 @@ class R2D2Api:
                 if raw:
                     battery = int(raw[0])
                     self._last_battery = battery
-                self._is_asleep = False
             except Exception:
                 _LOGGER.debug("Battery read failed for %s", self.address, exc_info=True)
                 battery = self._last_battery
