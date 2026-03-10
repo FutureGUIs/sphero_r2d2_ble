@@ -7,7 +7,7 @@ This custom integration converts the BLE command logic from `r2d2_ha_tiny.ino` i
 - Config flow for entering the R2-D2 Bluetooth MAC address
 - Native BLE connection through Home Assistant Bluetooth adapters / proxies
 - Wake and sleep buttons
-- Animation number entity plus play-animation button
+- Animation select entity plus play-animation button
 - Battery, RSSI, connected, asleep, and idle-time entities
 - Stance select entity (`bipod` / `tripod`)
 - `sphero_r2d2_ble.play_animation` service
