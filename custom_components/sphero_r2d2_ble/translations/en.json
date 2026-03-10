@@ -3,15 +3,19 @@
     "step": {
       "user": {
         "title": "Set up Sphero R2-D2 BLE",
-        "description": "Enter the Bluetooth address for your R2-D2 toy.",
+        "description": "Choose a discovered droid or enter its Bluetooth address manually.",
         "data": {
           "name": "Name",
           "address": "Bluetooth address"
         }
       }
     },
+    "error": {
+      "no_devices_found": "No supported Sphero droids are currently visible over Bluetooth."
+    },
     "abort": {
-      "already_configured": "This R2-D2 device is already configured."
+      "already_configured": "This R2-D2 device is already configured.",
+      "not_supported": "The discovered Bluetooth device is not supported."
     }
   }
 }

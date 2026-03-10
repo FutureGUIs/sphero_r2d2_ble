@@ -10,6 +10,7 @@ PLATFORMS = ["sensor", "binary_sensor", "button", "select"]
 CONF_ADDRESS = "address"
 CONF_NAME = "name"
 DEFAULT_NAME = "Sphero R2-D2"
+R2_NAME_PREFIXES: tuple[str, ...] = ("D2-", "Q5-")
 
 UPDATE_INTERVAL = timedelta(seconds=60)
 SLEEP_TIMEOUT_SECONDS = 600

@@ -17,3 +17,13 @@ class RuntimeData:
     api: R2D2Api
     coordinator: DataUpdateCoordinator[dict[str, Any]]
     selected_animation: int = 0
+
+
+@dataclass(slots=True, frozen=True)
+class DiscoveredDroid:
+    """A droid discovered through Home Assistant Bluetooth."""
+
+    address: str
+    name: str
+    rssi: int | None
+    connectable: bool
