@@ -1,0 +1,18 @@
+{
+  "domain": "sphero_r2d2_ble",
+  "name": "Sphero R2-D2 BLE",
+  "bluetooth": [
+    {
+      "service_uuid": "00020001-574f-4f20-5370-6865726f2121",
+      "connectable": true
+    }
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/h311m4n000/HA-Control-Sphero-R2D2",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "loggers": ["custom_components.sphero_r2d2_ble"],
+  "requirements": ["bleak-retry-connector>=3.9.0"],
+  "dependencies": ["bluetooth_adapters"],
+  "version": "0.1.0"
+}

@@ -1,0 +1,17 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Sphero R2-D2 BLE",
+        "description": "Enter the Bluetooth address for your R2-D2 toy.",
+        "data": {
+          "name": "Name",
+          "address": "Bluetooth address"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "This R2-D2 device is already configured."
+    }
+  }
+}

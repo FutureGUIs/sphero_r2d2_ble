@@ -1,0 +1,40 @@
+play_animation:
+  fields:
+    animation_id:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0
+          max: 56
+          mode: box
+    entity_id:
+      required: false
+      selector:
+        entity:
+          integration: sphero_r2d2_ble
+    device_id:
+      required: false
+      selector:
+        device:
+          integration: sphero_r2d2_ble
+set_stance:
+  fields:
+    stance:
+      required: true
+      example: tripod
+      selector:
+        select:
+          options:
+            - tripod
+            - bipod
+    entity_id:
+      required: false
+      selector:
+        entity:
+          integration: sphero_r2d2_ble
+    device_id:
+      required: false
+      selector:
+        device:
+          integration: sphero_r2d2_ble
