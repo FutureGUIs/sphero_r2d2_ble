@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
-import time
 from typing import Any
 
 from bleak import BleakClient
@@ -51,7 +50,6 @@ class R2D2Api:
         self._client: BleakClient | None = None
         self._lock = asyncio.Lock()
         self._sequence = 0
-        self._last_command_monotonic: float | None = None
         self._connected = False
         self._is_asleep = False
         self._last_battery: int | None = None
@@ -163,7 +161,6 @@ class R2D2Api:
         current_client = client or await self._ensure_connected_locked()
         packet = self._build_packet(device, command, payload)
         await current_client.write_gatt_char(R2_CHAR_CMD, packet, response=False)
-        self._last_command_monotonic = time.monotonic()
         self._connected = True
 
     async def async_send_command(self, device: int, command: int, payload: bytes = b"") -> None:
@@ -207,32 +204,13 @@ class R2D2Api:
                 _LOGGER.debug("Battery read failed for %s", self.address, exc_info=True)
                 battery = self._last_battery
 
-            idle_seconds = self.idle_seconds
             asleep = self.is_asleep
             return {
                 "connected": self._connected and bool(self._client and self._client.is_connected),
                 "battery": battery,
-                "idle_seconds": idle_seconds,
-                "idle_minutes": idle_seconds // 60,
                 "asleep": asleep,
                 "stance": self._last_stance,
-                "rssi": self.rssi,
             }
-
-    @property
-    def rssi(self) -> int | None:
-        service_info = bluetooth.async_last_service_info(
-            self.hass, self.address, connectable=True
-        )
-        if service_info is None:
-            return None
-        return service_info.rssi
-
-    @property
-    def idle_seconds(self) -> int:
-        if self._last_command_monotonic is None:
-            return 0
-        return max(0, int(time.monotonic() - self._last_command_monotonic))
 
     @property
     def is_asleep(self) -> bool:
