@@ -1,6 +1,6 @@
 # Sphero R2-D2 BLE custom integration
 
-This custom integration converts the BLE command logic from this repo https://github.com/h311m4n000/HA-Control-Sphero-R2D2 and `r2d2_ha_tiny.ino` into a native Home Assistant Bluetooth integration.  So thanks go out to https://github.com/h311m4n000!  Note there is one significant difference with this integration, this connects directly through Home Assistant's Bluetooth capabilities and doesn't require any ESP flashed specifically for communicating to R2-D2.
+This custom integration converts the BLE command logic from this repo https://github.com/h311m4n000/HA-Control-Sphero-R2D2 and `r2d2_ha_tiny.ino` into a native Home Assistant Bluetooth integration.  So thanks go out to https://github.com/h311m4n000!  Note there is one significant difference with this integration, this connects directly through Home Assistant's Bluetooth capabilities and doesn't require any ESP flashed specifically for communicating to R2-D2.  This was definitely vibe coded, but this is a really simple integration at the end of the day, and I've been wanting to make something like this for many years now...
 
 ## Included features
 
