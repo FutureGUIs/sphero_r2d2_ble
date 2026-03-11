@@ -18,11 +18,13 @@ SLEEP_TIMEOUT_SECONDS = 600
 SERVICE_PLAY_ANIMATION = "play_animation"
 SERVICE_SET_STANCE = "set_stance"
 
-STANCE_BIPOD = "bipod"
-STANCE_TRIPOD = "tripod"
+STANCE_BIPOD = "Bipod"
+STANCE_TRIPOD = "Tripod"
+STANCE_WADDLE = "Waddle"
 STANCE_TO_VALUE = {
     STANCE_TRIPOD: 1,
     STANCE_BIPOD: 2,
+    STANCE_WADDLE: 3,
 }
 VALUE_TO_STANCE = {value: key for key, value in STANCE_TO_VALUE.items()}
 

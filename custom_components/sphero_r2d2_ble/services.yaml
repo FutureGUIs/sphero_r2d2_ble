@@ -26,8 +26,9 @@ set_stance:
       selector:
         select:
           options:
-            - tripod
-            - bipod
+            - Tripod
+            - Bipod
+            - Waddle
     entity_id:
       required: false
       selector:

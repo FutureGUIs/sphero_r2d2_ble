@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_ADDRESS, CONF_NAME
 from homeassistant.data_entry_flow import FlowResult
 
-from .bluetooth import async_discovered_droids
+from .bluetooth import async_discovered_droids, discovery_name
 from .const import DEFAULT_NAME, DOMAIN
 
 
@@ -57,16 +57,17 @@ class SpheroR2D2BleConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_bluetooth(self, discovery_info) -> FlowResult:
         if not discovery_info.connectable:
             return self.async_abort(reason="not_supported")
+        name = discovery_name(discovery_info)
         await self.async_set_unique_id(discovery_info.address.upper())
         self._abort_if_unique_id_configured()
         self.context["title_placeholders"] = {
-            "name": discovery_info.name or discovery_info.address,
+            "name": name,
         }
         self._async_abort_entries_match({CONF_ADDRESS: discovery_info.address.upper()})
         return self.async_create_entry(
-            title=discovery_info.name or discovery_info.address,
+            title=name,
             data={
                 CONF_ADDRESS: discovery_info.address.upper(),
-                CONF_NAME: discovery_info.name or discovery_info.address,
+                CONF_NAME: name,
             },
         )

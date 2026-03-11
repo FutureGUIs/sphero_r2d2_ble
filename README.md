@@ -9,7 +9,7 @@ This custom integration converts the BLE command logic from this repo https://gi
 - Wake and sleep buttons
 - Animation select entity plus play-animation button
 - Battery, connected, and asleep entities
-- Stance select entity (`bipod` / `tripod`)
+- Stance select entity (`Bipod` / `Tripod` / `Waddle`)
 - `sphero_r2d2_ble.play_animation` service
 - `sphero_r2d2_ble.set_stance` service
 

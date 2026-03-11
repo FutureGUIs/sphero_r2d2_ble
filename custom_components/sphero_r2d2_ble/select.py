@@ -13,6 +13,7 @@ from .const import (
     ANIMATION_OPTIONS,
     STANCE_BIPOD,
     STANCE_TRIPOD,
+    STANCE_WADDLE,
 )
 from .entity import R2D2Entity
 from .models import RuntimeData
@@ -29,7 +30,7 @@ async def async_setup_entry(
 
 class R2D2StanceSelect(R2D2Entity, SelectEntity):
     _attr_name = "Stance"
-    _attr_options = [STANCE_BIPOD, STANCE_TRIPOD]
+    _attr_options = [STANCE_BIPOD, STANCE_TRIPOD, STANCE_WADDLE]
 
     def __init__(self, runtime_data: RuntimeData) -> None:
         super().__init__(runtime_data)

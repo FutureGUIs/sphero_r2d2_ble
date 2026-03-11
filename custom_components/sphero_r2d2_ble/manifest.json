@@ -5,6 +5,14 @@
     {
       "service_uuid": "00020001-574f-4f20-5370-6865726f2121",
       "connectable": true
+    },
+    {
+      "local_name": "D2-*",
+      "connectable": true
+    },
+    {
+      "local_name": "Q5-*",
+      "connectable": true
     }
   ],
   "config_flow": true,
@@ -14,5 +22,5 @@
   "loggers": ["custom_components.sphero_r2d2_ble"],
   "requirements": ["bleak-retry-connector>=3.9.0"],
   "dependencies": ["bluetooth_adapters"],
-  "version": "0.1.1"
+  "version": "0.1.3"
 }
