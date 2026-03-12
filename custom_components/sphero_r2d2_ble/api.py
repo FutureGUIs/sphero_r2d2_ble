@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import struct
 from typing import Any
 
 from bleak import BleakClient
@@ -14,9 +15,13 @@ from homeassistant.components import bluetooth
 from homeassistant.core import HomeAssistant
 
 from .const import (
+    ANIMATRONIC_DEVICE_ID,
+    ANIMATRONIC_SET_HEAD_POSITION,
     AUTH_MESSAGE,
     BATTERY_CHAR_UUID,
     BATTERY_SERVICE_UUID,
+    HEAD_POSITION_MAX,
+    HEAD_POSITION_MIN,
     IO_DEVICE_ID,
     IO_SET_ALL_LEDS_WITH_16_BIT_MASK,
     R2_CHAR_AUTH,
@@ -69,6 +74,7 @@ class R2D2Api:
         self._back_led: tuple[int, int, int] = (0, 0, 0)
         self._logic_displays = 0
         self._holo_projector = 0
+        self._head_position = 0.0
 
     async def async_disconnect(self) -> None:
         """Disconnect from the robot."""
@@ -204,6 +210,16 @@ class R2D2Api:
         self._last_stance = stance
         self._is_asleep = False
 
+    async def async_set_head_position(self, position: float) -> None:
+        clamped = max(float(HEAD_POSITION_MIN), min(float(HEAD_POSITION_MAX), float(position)))
+        await self.async_send_command(
+            ANIMATRONIC_DEVICE_ID,
+            ANIMATRONIC_SET_HEAD_POSITION,
+            struct.pack(">f", clamped),
+        )
+        self._head_position = clamped
+        self._is_asleep = False
+
     async def async_set_front_led(self, rgb: tuple[int, int, int]) -> None:
         await self._async_set_leds(
             (
@@ -274,6 +290,7 @@ class R2D2Api:
                 "back_led": self._back_led,
                 "logic_displays": self._logic_displays,
                 "holo_projector": self._holo_projector,
+                "head_position": self._head_position,
             }
 
     @property
