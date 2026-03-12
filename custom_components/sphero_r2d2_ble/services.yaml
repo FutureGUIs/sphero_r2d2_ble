@@ -26,6 +26,7 @@ set_stance:
       selector:
         select:
           options:
+            - Stop
             - Tripod
             - Bipod
             - Waddle

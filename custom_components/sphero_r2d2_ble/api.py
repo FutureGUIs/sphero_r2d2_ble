@@ -22,6 +22,7 @@ from .const import (
     R2_CHAR_NOTIFY_1,
     R2_SERVICE_AUTH,
     R2_SERVICE_CMD,
+    STANCE_STOP,
     STANCE_TO_VALUE,
 )
 
@@ -53,7 +54,7 @@ class R2D2Api:
         self._connected = False
         self._is_asleep = False
         self._last_battery: int | None = None
-        self._last_stance: str | None = None
+        self._last_stance: str | None = STANCE_STOP
 
     async def async_disconnect(self) -> None:
         """Disconnect from the robot."""

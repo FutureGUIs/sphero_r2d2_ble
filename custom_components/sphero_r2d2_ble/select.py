@@ -12,6 +12,7 @@ from .const import (
     ANIMATION_ID_TO_OPTION,
     ANIMATION_OPTIONS,
     STANCE_BIPOD,
+    STANCE_STOP,
     STANCE_TRIPOD,
     STANCE_WADDLE,
 )
@@ -30,7 +31,7 @@ async def async_setup_entry(
 
 class R2D2StanceSelect(R2D2Entity, SelectEntity):
     _attr_name = "Stance"
-    _attr_options = [STANCE_BIPOD, STANCE_TRIPOD, STANCE_WADDLE]
+    _attr_options = [STANCE_STOP, STANCE_BIPOD, STANCE_TRIPOD, STANCE_WADDLE]
 
     def __init__(self, runtime_data: RuntimeData) -> None:
         super().__init__(runtime_data)
@@ -38,7 +39,7 @@ class R2D2StanceSelect(R2D2Entity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        return self.coordinator.data.get("stance")
+        return self.coordinator.data.get("stance") or STANCE_STOP
 
     async def async_select_option(self, option: str) -> None:
         await self.api.async_set_stance(option)

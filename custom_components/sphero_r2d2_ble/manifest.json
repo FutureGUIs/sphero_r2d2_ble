@@ -22,5 +22,5 @@
   "loggers": ["custom_components.sphero_r2d2_ble"],
   "requirements": ["bleak-retry-connector>=3.9.0"],
   "dependencies": ["bluetooth_adapters"],
-  "version": "0.1.3"
+  "version": "0.1.4"
 }
