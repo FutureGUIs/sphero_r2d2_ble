@@ -28,6 +28,8 @@ from .const import (
     R2_LED_FRONT_BLUE,
     R2_LED_FRONT_GREEN,
     R2_LED_FRONT_RED,
+    R2_LED_HOLO_PROJECTOR,
+    R2_LED_LOGIC_DISPLAYS,
     R2_SERVICE_AUTH,
     R2_SERVICE_CMD,
     STANCE_STOP,
@@ -65,6 +67,8 @@ class R2D2Api:
         self._last_stance: str | None = STANCE_STOP
         self._front_led: tuple[int, int, int] = (0, 0, 0)
         self._back_led: tuple[int, int, int] = (0, 0, 0)
+        self._logic_displays = 0
+        self._holo_projector = 0
 
     async def async_disconnect(self) -> None:
         """Disconnect from the robot."""
@@ -222,6 +226,18 @@ class R2D2Api:
         self._back_led = rgb
         self._is_asleep = False
 
+    async def async_set_logic_displays(self, brightness: int) -> None:
+        level = max(0, min(255, brightness))
+        await self._async_set_leds(((R2_LED_LOGIC_DISPLAYS, level),))
+        self._logic_displays = level
+        self._is_asleep = False
+
+    async def async_set_holo_projector(self, brightness: int) -> None:
+        level = max(0, min(255, brightness))
+        await self._async_set_leds(((R2_LED_HOLO_PROJECTOR, level),))
+        self._holo_projector = level
+        self._is_asleep = False
+
     async def _async_set_leds(self, led_values: tuple[tuple[int, int], ...]) -> None:
         mask = 0
         payload = bytearray()
@@ -256,6 +272,8 @@ class R2D2Api:
                 "stance": self._last_stance,
                 "front_led": self._front_led,
                 "back_led": self._back_led,
+                "logic_displays": self._logic_displays,
+                "holo_projector": self._holo_projector,
             }
 
     @property
