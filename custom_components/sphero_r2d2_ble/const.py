@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 DOMAIN = "sphero_r2d2_ble"
-PLATFORMS = ["sensor", "binary_sensor", "button", "select"]
+PLATFORMS = ["sensor", "binary_sensor", "button", "select", "light"]
 
 CONF_ADDRESS = "address"
 CONF_NAME = "name"
@@ -100,3 +100,13 @@ AUTH_MESSAGE = b"usetheforce...band"
 
 BATTERY_SERVICE_UUID = "0000180f-0000-1000-8000-00805f9b34fb"
 BATTERY_CHAR_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
+
+IO_DEVICE_ID = 0x1A
+IO_SET_ALL_LEDS_WITH_16_BIT_MASK = 0x0E
+
+R2_LED_FRONT_RED = 0
+R2_LED_FRONT_GREEN = 1
+R2_LED_FRONT_BLUE = 2
+R2_LED_BACK_RED = 4
+R2_LED_BACK_GREEN = 5
+R2_LED_BACK_BLUE = 6

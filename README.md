@@ -8,6 +8,7 @@ This custom integration converts the BLE command logic from this repo https://gi
 - Native BLE connection through Home Assistant Bluetooth adapters and proxies
 - Wake and sleep buttons
 - Animation select entity plus play-animation button
+- Front and back RGB LED light entities
 - Battery, connected, and asleep entities
 - Stance select entity (`Stop` / `Bipod` / `Tripod` / `Waddle`)
 - `sphero_r2d2_ble.play_animation` service

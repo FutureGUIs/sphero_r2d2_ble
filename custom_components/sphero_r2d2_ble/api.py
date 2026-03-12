@@ -17,9 +17,17 @@ from .const import (
     AUTH_MESSAGE,
     BATTERY_CHAR_UUID,
     BATTERY_SERVICE_UUID,
+    IO_DEVICE_ID,
+    IO_SET_ALL_LEDS_WITH_16_BIT_MASK,
     R2_CHAR_AUTH,
     R2_CHAR_CMD,
     R2_CHAR_NOTIFY_1,
+    R2_LED_BACK_BLUE,
+    R2_LED_BACK_GREEN,
+    R2_LED_BACK_RED,
+    R2_LED_FRONT_BLUE,
+    R2_LED_FRONT_GREEN,
+    R2_LED_FRONT_RED,
     R2_SERVICE_AUTH,
     R2_SERVICE_CMD,
     STANCE_STOP,
@@ -55,6 +63,8 @@ class R2D2Api:
         self._is_asleep = False
         self._last_battery: int | None = None
         self._last_stance: str | None = STANCE_STOP
+        self._front_led: tuple[int, int, int] = (0, 0, 0)
+        self._back_led: tuple[int, int, int] = (0, 0, 0)
 
     async def async_disconnect(self) -> None:
         """Disconnect from the robot."""
@@ -190,6 +200,40 @@ class R2D2Api:
         self._last_stance = stance
         self._is_asleep = False
 
+    async def async_set_front_led(self, rgb: tuple[int, int, int]) -> None:
+        await self._async_set_leds(
+            (
+                (R2_LED_FRONT_RED, rgb[0]),
+                (R2_LED_FRONT_GREEN, rgb[1]),
+                (R2_LED_FRONT_BLUE, rgb[2]),
+            )
+        )
+        self._front_led = rgb
+        self._is_asleep = False
+
+    async def async_set_back_led(self, rgb: tuple[int, int, int]) -> None:
+        await self._async_set_leds(
+            (
+                (R2_LED_BACK_RED, rgb[0]),
+                (R2_LED_BACK_GREEN, rgb[1]),
+                (R2_LED_BACK_BLUE, rgb[2]),
+            )
+        )
+        self._back_led = rgb
+        self._is_asleep = False
+
+    async def _async_set_leds(self, led_values: tuple[tuple[int, int], ...]) -> None:
+        mask = 0
+        payload = bytearray()
+        for led_index, value in led_values:
+            mask |= 1 << led_index
+            payload.append(max(0, min(255, value)))
+        await self.async_send_command(
+            IO_DEVICE_ID,
+            IO_SET_ALL_LEDS_WITH_16_BIT_MASK,
+            bytes(((mask >> 8) & 0xFF, mask & 0xFF, *payload)),
+        )
+
     async def async_get_status(self) -> dict[str, Any]:
         """Poll current status."""
         async with self._lock:
@@ -210,6 +254,8 @@ class R2D2Api:
                 "battery": battery,
                 "asleep": asleep,
                 "stance": self._last_stance,
+                "front_led": self._front_led,
+                "back_led": self._back_led,
             }
 
     @property
