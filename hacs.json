@@ -1,10 +1,4 @@
 {
   "name": "Sphero R2-D2 BLE",
-  "render_readme": true,
-  "country": "US",
-  "homeassistant": "2026.3.0",
-  "iot_class": "Local Polling",
-  "domains": [
-    "sphero_r2d2_ble"
-  ]
+  "homeassistant": "2026.3.0"
 }

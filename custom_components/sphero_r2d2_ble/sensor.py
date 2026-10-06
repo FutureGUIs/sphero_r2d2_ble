@@ -36,3 +36,7 @@ class R2D2BatterySensor(R2D2Entity, SensorEntity):
     @property
     def native_value(self):
         return self.coordinator.data.get("battery")
+
+    @property
+    def extra_state_attributes(self):
+        return {"last_updated": self.coordinator.data.get("battery_updated_at")}

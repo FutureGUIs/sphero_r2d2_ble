@@ -21,11 +21,23 @@ class R2D2Coordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=UPDATE_INTERVAL,
         )
         self.api = api
+        api.set_state_callback(self._async_api_state_changed)
+
+    def _async_api_state_changed(self) -> None:
+        """Publish transport changes without scheduling a reconnect or poll."""
+        self.async_update_local_state(**self.api.status_snapshot())
+
+    async def async_startup(self) -> None:
+        """Attempt a wake in the background while offline entities stay loaded."""
+        self.async_set_updated_data(await self.api.async_startup())
 
     def async_update_local_state(self, **changes: Any) -> None:
         """Push known state changes to entities without waiting for a poll."""
         current = dict(self.data) if self.data else {}
         current.update(changes)
+        # Entity actions must not overwrite a concurrent disconnect with an
+        # optimistic connected=True after a successful GATT write.
+        current["connected"] = self.api.is_connected
         self.async_set_updated_data(current)
 
     async def _async_update_data(self) -> dict[str, Any]:

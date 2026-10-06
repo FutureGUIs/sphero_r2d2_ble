@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 import voluptuous as vol
+from homeassistant.components import bluetooth as ha_bluetooth
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import HomeAssistantError
@@ -115,13 +116,58 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         name=entry.data[CONF_NAME],
     )
     coordinator = R2D2Coordinator(hass, _LOGGER, api)
-    await coordinator.async_config_entry_first_refresh()
+    entry.async_on_unload(lambda: api.set_state_callback(None))
+
+    def _async_seen(service_info, change) -> None:
+        api.async_update_presence(True)
+
+    def _async_advertisement(service_info) -> None:
+        api.async_update_presence(True)
+
+    def _async_unavailable(service_info) -> None:
+        api.async_update_presence(False)
+
+    api.async_update_presence(
+        ha_bluetooth.async_address_present(hass, api.address, connectable=False)
+    )
+    # Newer HA versions expose every packet; older versions deliver changed
+    # advertisements only. Presence is diagnostic and never overrides GATT.
+    register_advertisement = getattr(
+        ha_bluetooth, "async_register_advertisement_callback", None,
+    )
+    if register_advertisement is not None:
+        entry.async_on_unload(
+            register_advertisement(hass, _async_advertisement, api.address)
+        )
+    else:
+        entry.async_on_unload(
+            ha_bluetooth.async_register_callback(
+                hass, _async_seen, {"address": api.address, "connectable": False},
+                ha_bluetooth.BluetoothScanningMode.PASSIVE,
+            )
+        )
+    entry.async_on_unload(
+        ha_bluetooth.async_track_unavailable(
+            hass, _async_unavailable, api.address, connectable=False,
+        )
+    )
+    # An offline droid must not prevent entities (especially Wake) from loading.
+    # Perform the initial connection/wake attempt after platform setup instead.
+    coordinator.async_update_local_state(**api.status_snapshot())
 
     runtime = RuntimeData(api=api, coordinator=coordinator)
     hass.data[DOMAIN][entry.entry_id] = runtime
     entry.runtime_data = runtime
 
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    try:
+        await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    except BaseException:
+        hass.data[DOMAIN].pop(entry.entry_id, None)
+        await api.async_shutdown()
+        raise
+    entry.async_create_background_task(
+        hass, coordinator.async_startup(), f"{DOMAIN} startup {api.address}",
+    )
     return True
 
 
@@ -130,5 +176,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         runtime: RuntimeData = hass.data[DOMAIN].pop(entry.entry_id)
-        await runtime.api.async_disconnect()
+        await runtime.api.async_shutdown()
     return unload_ok
